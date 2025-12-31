@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inclusive Language for Neurodiversity-Affirming Educators</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 100%;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        
+        .activity-container {
+            background: white;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            width: 100%;
+            box-sizing: border-box;
+        }
+        
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 10px;
+            font-size: 28px;
+        }
+        
+        .instructions {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 16px;
+        }
+        
+        .matching-board {
+            display: flex;
+            justify-content: space-between;
+            gap: 60px;
+            margin-bottom: 30px;
+            padding: 0 20px;
+        }
+        
+        .column {
+            flex: 1;
+            max-width: 45%;
+        }
+        
+        .column-title {
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #444;
+            text-align: center;
+            font-size: 18px;
+        }
+        
+        .item {
+            background: #f8f9fa;
+            border: 3px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 15px 20px;
+            margin-bottom: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+            font-size: 15px;
+            min-height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        
+        .item.selected {
+            background: #fff;
+            border-width: 4px;
+            font-weight: 600;
+        }
+        
+        /* Color pairs for matching */
+        .item.matched-1 { background: #FFE4E1; border-color: #FF6B6B; color: #8B0000; }
+        .item.matched-2 { background: #E6F3FF; border-color: #4A90E2; color: #00008B; }
+        .item.matched-3 { background: #F0FFF0; border-color: #4CAF50; color: #006400; }
+        .item.matched-4 { background: #FFF8DC; border-color: #FFA500; color: #8B4513; }
+        .item.matched-5 { background: #F5E6FF; border-color: #9B59B6; color: #4B0082; }
+        .item.matched-6 { background: #FFE4B5; border-color: #FF8C00; color: #8B4513; }
+        .item.matched-7 { background: #E0FFFF; border-color: #00CED1; color: #008B8B; }
+        .item.matched-8 { background: #FFE4E9; border-color: #FF69B4; color: #8B008B; }
+        
+        .item.incorrect {
+            background: #e74c3c !important;
+            color: white;
+            border-color: #c0392b !important;
+            animation: shake 0.5s;
+        }
+        
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+        
+        .controls {
+            text-align: center;
+            margin-top: 30px;
+        }
+        
+        .btn {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 0 10px;
+            transition: background 0.3s;
+        }
+        
+        .btn:hover {
+            background: #45a049;
+        }
+        
+        .btn-secondary {
+            background: #2196F3;
+        }
+        
+        .btn-secondary:hover {
+            background: #1976D2;
+        }
+        
+        .score {
+            text-align: center;
+            font-size: 20px;
+            margin-top: 20px;
+            color: #333;
+        }
+        
+        .feedback {
+            text-align: center;
+            font-size: 24px;
+            font-weight: bold;
+            margin-top: 20px;
+            padding: 20px;
+            border-radius: 8px;
+            display: none;
+        }
+        
+        .feedback.success {
+            background: #d4edda;
+            color: #155724;
+            display: block;
+        }
+        
+        .feedback.error {
+            background: #f8d7da;
+            color: #721c24;
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="activity-container">
+        <h1>Inclusive Language for Neurodiversity-Affirming Educators</h1>
+        <p class="instructions">Match traditional language with neurodiversity-affirming alternatives. Click on a phrase from the left column, then click on its inclusive alternative from the right. Matched pairs will share the same color.</p>
+        
+        <div class="matching-board">
+            <div class="column">
+                <div class="column-title">Traditional Language</div>
+                <div id="left-column"></div>
+            </div>
+            <div class="column">
+                <div class="column-title">Inclusive Alternatives</div>
+                <div id="right-column"></div>
+            </div>
+        </div>
+        
+        <div class="controls">
+            <button class="btn btn-secondary" onclick="resetActivity()">Reset</button>
+            <button class="btn" onclick="showAllAnswers()">Show All Matches</button>
+        </div>
+        
+        <div class="score" id="score"></div>
+        <div class="feedback" id="feedback"></div>
+    </div>
+
+    <script>
+        // Define your matching pairs here
+        const matchingPairs = [
+            { 
+                term: "Special needs student", 
+                definition: "Neurodivergent learner",
+                pairId: 1
+            },
+            { 
+                term: "High/low functioning", 
+                definition: "High/low support needs",
+                pairId: 2
+            },
+            { 
+                term: "Suffers from autism", 
+                definition: "Is autistic / Autistic person",
+                pairId: 3
+            },
+            { 
+                term: "Normal/typical children", 
+                definition: "Neuro-normative children",
+                pairId: 4
+            },
+            { 
+                term: "Behavioral problems", 
+                definition: "Communication of unmet needs",
+                pairId: 5
+            },
+            { 
+                term: "Deficit/disorder", 
+                definition: "Difference/divergence",
+                pairId: 6
+            },
+            { 
+                term: "Challenging behavior", 
+                definition: "Distressed behavior",
+                pairId: 7
+            },
+            { 
+                term: "Non-compliant", 
+                definition: "Difficulty with task/expectation",
+                pairId: 8
+            }
+        ];
+        
+        let selectedLeft = null;
+        let selectedRight = null;
+        let matches = {};
+        let score = 0;
+        let matchedPairs = {};
+        
+        function shuffle(array) {
+            const newArray = [...array];
+            for (let i = newArray.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
+            }
+            return newArray;
+        }
+        
+        function initializeActivity() {
+            const leftColumn = document.getElementById('left-column');
+            const rightColumn = document.getElementById('right-column');
+            
+            leftColumn.innerHTML = '';
+            rightColumn.innerHTML = '';
+            matchedPairs = {};
+            
+            const shuffledTerms = shuffle(matchingPairs);
+            const shuffledDefinitions = shuffle(matchingPairs);
+            
+            shuffledTerms.forEach((pair, index) => {
+                const termDiv = document.createElement('div');
+                termDiv.className = 'item';
+                termDiv.textContent = pair.term;
+                termDiv.dataset.term = pair.term;
+                termDiv.dataset.pairId = pair.pairId;
+                termDiv.onclick = () => selectLeft(termDiv);
+                leftColumn.appendChild(termDiv);
+            });
+            
+            shuffledDefinitions.forEach((pair, index) => {
+                const defDiv = document.createElement('div');
+                defDiv.className = 'item';
+                defDiv.textContent = pair.definition;
+                defDiv.dataset.definition = pair.definition;
+                defDiv.dataset.pairId = pair.pairId;
+                defDiv.onclick = () => selectRight(defDiv);
+                rightColumn.appendChild(defDiv);
+            });
+        }
+        
+        function selectLeft(element) {
+            if (matchedPairs[element.dataset.pairId]) return;
+            
+            document.querySelectorAll('#left-column .item').forEach(item => {
+                if (!matchedPairs[item.dataset.pairId]) {
+                    item.classList.remove('selected', 'incorrect');
+                }
+            });
+            
+            element.classList.add('selected');
+            selectedLeft = {
+                term: element.dataset.term,
+                pairId: element.dataset.pairId,
+                element: element
+            };
+            
+            if (selectedRight) {
+                makeMatch();
+            }
+        }
+        
+        function selectRight(element) {
+            if (matchedPairs[element.dataset.pairId]) return;
+            
+            document.querySelectorAll('#right-column .item').forEach(item => {
+                if (!matchedPairs[item.dataset.pairId]) {
+                    item.classList.remove('selected', 'incorrect');
+                }
+            });
+            
+            element.classList.add('selected');
+            selectedRight = {
+                definition: element.dataset.definition,
+                pairId: element.dataset.pairId,
+                element: element
+            };
+            
+            if (selectedLeft) {
+                makeMatch();
+            }
+        }
+        
+        function makeMatch() {
+            const isCorrect = selectedLeft.pairId === selectedRight.pairId;
+            
+            if (isCorrect) {
+                selectedLeft.element.classList.remove('selected');
+                selectedLeft.element.classList.add(`matched-${selectedLeft.pairId}`);
+                selectedRight.element.classList.remove('selected');
+                selectedRight.element.classList.add(`matched-${selectedRight.pairId}`);
+                
+                matchedPairs[selectedLeft.pairId] = true;
+                score++;
+                updateScore();
+                
+                if (score === matchingPairs.length) {
+                    setTimeout(() => {
+                        const feedback = document.getElementById('feedback');
+                        feedback.textContent = '🎉 Excellent! You\'ve mastered inclusive language!';
+                        feedback.className = 'feedback success';
+                    }, 500);
+                }
+            } else {
+                selectedLeft.element.classList.remove('selected');
+                selectedLeft.element.classList.add('incorrect');
+                selectedRight.element.classList.remove('selected');
+                selectedRight.element.classList.add('incorrect');
+                
+                setTimeout(() => {
+                    selectedLeft.element.classList.remove('incorrect');
+                    selectedRight.element.classList.remove('incorrect');
+                }, 1000);
+            }
+            
+            selectedLeft = null;
+            selectedRight = null;
+        }
+        
+        function updateScore() {
+            const scoreElement = document.getElementById('score');
+            scoreElement.textContent = `Correct Matches: ${score} / ${matchingPairs.length}`;
+        }
+        
+        function showAllAnswers() {
+            // Clear any selections
+            selectedLeft = null;
+            selectedRight = null;
+            
+            // Match all pairs with their colors
+            document.querySelectorAll('.item').forEach(item => {
+                const pairId = item.dataset.pairId;
+                item.classList.remove('selected', 'incorrect');
+                item.classList.add(`matched-${pairId}`);
+                matchedPairs[pairId] = true;
+            });
+            
+            score = matchingPairs.length;
+            updateScore();
+            
+            const feedback = document.getElementById('feedback');
+            feedback.textContent = 'Here are all the inclusive language matches!';
+            feedback.className = 'feedback success';
+        }
+        
+        function resetActivity() {
+            selectedLeft = null;
+            selectedRight = null;
+            matches = {};
+            score = 0;
+            document.getElementById('score').textContent = '';
+            document.getElementById('feedback').className = 'feedback';
+            initializeActivity();
+        }
+        
+        // Initialize the activity when the page loads
+        initializeActivity();
+        updateScore();
+    </script>
+</body>
+</html>
